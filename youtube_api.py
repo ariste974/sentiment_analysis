@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 
 
 # === CONFIGURATION ===
-API_KEY = "AIzaSyAiZhA317VKGvADdoSblIany73s_icMB9g"
+API_KEY = "API_key"
 VIDEO_ID = "0aR9xvrRP2g"  # ex: "dQw4w9WgXcQ"
 MAX_RESULTS = 100  # nombre max de commentaires par page (max 100)
 
