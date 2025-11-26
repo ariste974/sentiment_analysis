@@ -49,7 +49,7 @@ def get_video_comments(video_id):
 def get_video_stats(video_id):
     """
     Récupère les statistiques détaillées d'une vidéo YouTube
-    Retourne un dictionnaire contenant les vues, likes, date de publication, etc.
+    Retourne un DataFrame d'une seule ligne
     """
     try:
         # Récupération des détails de la vidéo
@@ -60,12 +60,13 @@ def get_video_stats(video_id):
         response = request.execute()
 
         if not response.get('items'):
-            return None
+            return pd.DataFrame()  # vide si pas trouvé
 
         video_data = response['items'][0]
         
         # Extraction des données
         stats = {
+            'video_id': video_data['id'],
             'title': video_data['snippet']['title'],
             'channel_name': video_data['snippet']['channelTitle'],
             'publication_date': video_data['snippet']['publishedAt'],
@@ -76,13 +77,16 @@ def get_video_stats(video_id):
             'description': video_data['snippet']['description']
         }
         
-        return stats
+        return pd.DataFrame([stats])  # <-- une ligne
+
     except Exception as e:
         print(f"Erreur lors de la récupération des statistiques: {str(e)}")
-        return None
+        return pd.DataFrame()
+
 def get_channel_videos_by_title(channel_title, max_results=None):
     """
     Récupère les vidéos d'une chaîne YouTube via sa playlist 'uploads'
+    Retourne un pandas.DataFrame avec les colonnes: video_id, title, published_at, description
     """
     try:
         # 1. Trouver la chaîne
@@ -132,26 +136,39 @@ def get_channel_videos_by_title(channel_title, max_results=None):
                 print(f"Vidéo trouvée: {video['title']}")  # Pour suivre la progression
 
                 if max_results and len(videos) >= max_results:
-                    return videos[:max_results]
+                    return pd.DataFrame(videos[:max_results])
 
             next_page_token = playlist_items.get("nextPageToken")
             if not next_page_token:
                 break
 
         print(f"Total vidéos trouvées: {len(videos)}")
-        return videos
+        return pd.DataFrame(videos)
 
     except Exception as e:
         print(f"Erreur: {str(e)}")
-        return []
+        return pd.DataFrame()
+def merge_datasets(channel_title, max_results=10):
+    """
+    Fusionne les DataFrames des vidéos et des statistiques sur 'video_id'
+    """
+    videos = get_channel_videos_by_title(channel_title, max_results=max_results)
+    # initialiser un DataFrame vide avec les colonnes attendues
+    stat = pd.DataFrame(columns=[
+            'video_id','title','channel_name','publication_date',
+            'view_count','like_count','comment_count','duration','description'
+        ])
+    # récupérer et concaténer correctement
+    for vid_id in videos.get('video_id', []):
+        row = get_video_stats(vid_id)
+        if not row.empty:
+            stat = pd.concat([stat, row], ignore_index=True)
+    data_final = pd.merge(videos, stat, on=['video_id'])
+    data_final=data_final.drop(columns=['title_y','description_y'])
+    data_final=data_final.rename(columns={'title_x':'title','description_x':'description'})
+    return data_final
 # === UTILISATION ===
 if __name__ == "__main__":
     channel_title = "Squeezie"  # Exemple avec le titre de la chaîne
-    videos = get_channel_videos_by_title(channel_title, max_results=10)
-    
-    print(f"\n=== VIDÉOS DE {channel_title} ===")
-    for video in videos:
-        print(f"\nTitre: {video['title']}")
-        print(f"ID: {video['video_id']}")
-        print(f"Date: {video['published_at']}")
-        print("-" * 50)
+    data_final = merge_datasets(channel_title, max_results=5)
+    print(data_final.columns)  # Affiche les statistiques de la première vidéo
