@@ -1,9 +1,10 @@
 import pandas as pd
 from googleapiclient.discovery import build
-
-
+from dotenv import load_dotenv
+import os
 # === CONFIGURATION ===
-API_KEY = "API_key"
+load_dotenv()  # lit le .env dans le répertoire courant
+API_KEY = os.getenv("API_KEY")
 VIDEO_ID = "0aR9xvrRP2g"  # ex: "dQw4w9WgXcQ"
 MAX_RESULTS = 100  # nombre max de commentaires par page (max 100)
 
