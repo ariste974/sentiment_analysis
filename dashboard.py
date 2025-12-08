@@ -147,9 +147,9 @@ def analyze_comments(video_id):
     except Exception as e:
         return html.Div(f"Erreur pipeline sentiment : {e}", style={"color": "red"})
 
-    pos = sum(1 for r in results if r.get("label", "").lower() == "positive")
+    pos = sum(1 for r in results if r.get("label", "").lower() == "positive" or r.get("label", "").lower() =="very positive")
     neu = sum(1 for r in results if r.get("label", "").lower() == "neutral")
-    neg = sum(1 for r in results if r.get("label", "").lower() == "negative")
+    neg = sum(1 for r in results if r.get("label", "").lower() == "negative" or r.get("label", "").lower() == "very negative")
 
     df_sent = pd.DataFrame({"Sentiment": ["Positif", "Neutre", "Négatif"], "Count": [pos, neu, neg]})
     fig_sent = px.pie(df_sent, names="Sentiment", values="Count", title="Répartition des sentiments", template="plotly_dark")
