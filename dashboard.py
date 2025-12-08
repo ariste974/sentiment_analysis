@@ -3,16 +3,16 @@ import dash
 from dash import html, dcc, Input, Output, State
 import plotly.express as px
 import pandas as pd
-from transformers import BertTokenizer, BertForSequenceClassification, pipeline
+from transformers import pipeline
 
 from youtube_api import get_video_stats, get_channel_videos_by_title, get_video_comments, merge_datasets
 
 # -----------------------------
 # FinBERT (peut être lourd à charger)
 # -----------------------------
-finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone', num_labels=3)
-tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
-sentiment_pipeline = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
+
+sentiment_pipeline = pipeline("text-classification", model="tabularisai/multilingual-sentiment-analysis")
+
 
 # -----------------------------
 # Helpers
@@ -34,7 +34,7 @@ def parse_iso8601_duration(duration):
 # Dash App
 # -----------------------------
 app = dash.Dash(__name__)
-app.title = "YouTube + FinBERT Dashboard"
+app.title = "YouTube + tabularisai Dashboard"
 
 app.layout = html.Div(style={"backgroundColor": "#111", "color": "white", "padding": "20px"}, children=[
 
@@ -51,7 +51,7 @@ app.layout = html.Div(style={"backgroundColor": "#111", "color": "white", "paddi
     html.Br(),
 
     html.H2("🧠 Analyse des commentaires", style={"textAlign": "center"}),
-    dcc.Dropdown(id="video_selector", style={"width": "60%", "margin": "auto"}),
+    dcc.Dropdown(id="video_selector", style={"width": "60%", "margin": "auto", "color": "black"}),
     html.Br(),
     html.Div(id="sentiment_output")
 ])
