@@ -8,7 +8,7 @@ from transformers import pipeline
 from youtube_api import get_video_stats, get_channel_videos_by_title, get_video_comments, merge_datasets
 
 # -----------------------------
-# Sentiment Analysis (FinBERT-like)
+# Sentiment Analysis
 # -----------------------------
 
 sentiment_pipeline = pipeline("text-classification", model="tabularisai/multilingual-sentiment-analysis")
@@ -37,7 +37,7 @@ app.title = "YouTube + tabularisai Dashboard"
 
 app.layout = html.Div(style={"backgroundColor": "#111", "color": "white", "padding": "20px"}, children=[
 
-    html.H1("🎥 YouTube Analytics + Sentiment (FinBERT)", style={"textAlign": "center"}),
+    html.H1("YouTube Analytics + Sentiment", style={"textAlign": "center"}),
 
     html.Div([
         dcc.Input(id="channel_input", type="text", placeholder="YouTube channel name...",
@@ -49,7 +49,7 @@ app.layout = html.Div(style={"backgroundColor": "#111", "color": "white", "paddi
     html.Div(id="charts_area"),
     html.Br(),
 
-    html.H2("🧠 Comment Analysis", style={"textAlign": "center"}),
+    html.H2("Comment Analysis", style={"textAlign": "center"}),
     dcc.Dropdown(id="video_selector", style={"width": "60%", "margin": "auto", "color": "black"}),
     html.Br(),
     html.Div(id="sentiment_output")
@@ -154,6 +154,7 @@ def analyze_comments(video_id):
                style={"textAlign": "center", "fontSize": "18px"}),
         dcc.Graph(figure=fig_sent)
     ])
+
 
 # -----------------------------
 # Run

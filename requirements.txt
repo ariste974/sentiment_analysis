@@ -1,0 +1,18 @@
+pip install pandas
+pip install numpy
+pip install matplotlib
+pip install seaborn
+pip install scikit-learn
+pip install imbalanced-learn
+pip install nltk
+pip install emoji
+pip install tensorflow
+pip install transformers
+pip install datasets
+pip install torch
+pip install dash
+pip install plotly
+pip install google-api-python-client
+pip install python-dotenv
+
+# version can be adjusted (look on internet or with AI for correct installation)
